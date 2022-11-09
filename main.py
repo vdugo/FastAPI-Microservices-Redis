@@ -51,3 +51,7 @@ def format(pk: str):
         'price': product.price,
         'quantity': product.quantity
     }
+    
+@app.delete('/product/{pk}')
+def delete(pk: str):
+    return Product.delete(pk)
