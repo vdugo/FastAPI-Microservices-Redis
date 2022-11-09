@@ -19,9 +19,12 @@ while True:
         if results != []:
             for result in results:
                 obj = result[1][0][1]
-                product = Product.get(obj['product_id'])
-                product.quantity -= int(obj['quantity'])
-                product.save()
+                try:
+                    product = Product.get(obj['product_id'])
+                    product.quantity -= int(obj['quantity'])
+                    product.save()
+                except:
+                    redis.xadd(name='order-completed', fields=obj)
     except Exception as e:
         print(str(e))
     time.sleep(3)
