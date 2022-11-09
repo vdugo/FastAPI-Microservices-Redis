@@ -3,7 +3,7 @@ import os
 from dotenv import load_dotenv
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from redis_om import get_redis_connection
+from redis_om import get_redis_connection, HashModel
 
 load_dotenv()
 
@@ -22,3 +22,23 @@ redis = get_redis_connection(
     password=os.getenv('REDIS_PASSWORD'),
     decode_responses=True
 )
+
+class Product(HashModel):
+    name: str
+    price: float
+    quantity: int
+    
+    class Meta():
+        database = redis
+        
+@app.post('/product')
+def create(product: Product):
+    return product.save()
+
+@app.get('/product/{pk}')
+def get(pk: str):
+    return Product.get(pk)
+
+@app.get('/products')
+def all():
+    return Product.all_pks()
